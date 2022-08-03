@@ -13,7 +13,6 @@ function Header(props){
 
 function Nav(props){
   const lis = []
-
   for(let i=0 ; i<props.topics.length ; i++){
     let t = props.topics[i];
     lis.push(<li key={t.id}>
@@ -22,7 +21,6 @@ function Nav(props){
         props.onChangeMode(Number(event.target.id));
       }}>{t.title}</a></li>)
   }
-
   return <nav>
     <ol>
       {lis}
@@ -65,7 +63,6 @@ function Update(props){
         const body = event.target.body.value;
         props.onUpdate(title, body);
       }}>
-        {/* p 태그로 보기 좋게 감싸줌 */}
         <p><input type="text" name="title" placeholder="title" value={title} onChange={event=>{
           setTitle(event.target.value);
         }}/></p> 
@@ -94,8 +91,7 @@ function App() {
 
   if (mode === 'WELCOME'){
     content= <Article title="Welcome" body="Hello, WEB" ></Article>
-  } 
-  else if (mode === 'READ'){
+  } else if (mode === 'READ'){
     let title, body = null;
     for(let i=0; i<topics.length; i++){
       if(topics[i].id === id){
@@ -104,12 +100,23 @@ function App() {
       }
     }
     content = <Article title={title} body={body} ></Article>
-    contextControl = <li><a href={'/update'+id} onClick={event=>{
-      event.preventDefault();
-      setMode('UPDATE');
-    }}>Update</a></li>
-  } 
-  else if (mode === 'CREATE'){
+    contextControl = <>
+      <li><a href={'/update'+id} onClick={event=>{
+        event.preventDefault();
+        setMode('UPDATE');
+      }}>Update</a></li>
+      <li><input type="button" value="Delete" onClick={()=>{
+        const newTopics = []
+        for(let i=0; i<topics.length; i++){
+          if(topics[i].id !== id){
+            newTopics.push(topics[i]);
+          }
+        }
+        setTopics(newTopics);
+        setMode('WELCOME');
+      }}></input></li>
+    </>
+  } else if (mode === 'CREATE'){
     content = <Create onCreate={(_title, _body)=>{
       const newTopic = {id:nextId, title:_title, body:_body}
       const newTopics = [...topics]
@@ -118,8 +125,7 @@ function App() {
       setMode('READ');
       setId(nextId+1);
     }}></Create>
-  } 
-  else if (mode === 'UPDATE'){
+  } else if (mode === 'UPDATE'){
     let title, body = null;
     for(let i=0; i<topics.length; i++){
       if(topics[i].id === id){
